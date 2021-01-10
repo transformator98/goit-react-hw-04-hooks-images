@@ -64,7 +64,8 @@ export default function App() {
 
     const scrollPage = () => {
       window.scrollTo({
-        top: document.documentElement.scrollHeight,
+        // top: document.documentElement.scrollHeight,
+        top: document.documentElement.offsetHeight,
         behavior: 'smooth',
       });
     };
@@ -80,12 +81,12 @@ export default function App() {
         setTotal(total);
         setIsLoading(false);
         setStatus(Status.RESOLVED);
-        scrollPage();
       })
       .catch(error => {
         setError(error);
         setStatus(Status.REJECTED);
       });
+    scrollPage();
   }, [imageName, page]);
 
   const onLoadMore = () => {
