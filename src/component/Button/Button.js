@@ -1,10 +1,9 @@
 import s from './Button.module.css';
 import PropTypes from 'prop-types';
 
-export default function Button({ onLoadMore }) {
-  // console.log('Button', onLoadMore);
+export default function Button({ loadMore }) {
   return (
-    <button className={s.button} type="button" onClick={onLoadMore}>
+    <button className={s.button} type="button" onClick={loadMore}>
       Load more
     </button>
   );
