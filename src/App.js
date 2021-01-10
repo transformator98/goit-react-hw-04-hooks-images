@@ -40,7 +40,6 @@ export default function App() {
 
   const toggleModal = () => {
     setLargeImageURL('');
-    // this.setState({ largeImageURL: '' });
   };
 
   const largeImgModal = event => {
@@ -52,22 +51,18 @@ export default function App() {
 
     const largeURL = imagesClick.dataset.sourse;
     setLargeImageURL(largeURL);
-    // this.setState(({ largeImageURL }) => ({
-    //   largeImageURL: largeURL,
-    // }));
   };
 
-  // useEffect(() => {
-  //   if (prevState.imageName !== imageName) {
-  //     setStatus(Status.PENDING);
-  //     setImages([]);
-  //     setPage(1);
-  //   }
+  useEffect(() => {
+    if (imageName === '') {
+      return;
+    }
 
-  //   fetchApiGallery();
-  // }, [imageName]);
+    console.log('Обновление Стейта', Date.now());
+    setStatus(Status.PENDING);
+    // setImages([]);
+    // setPage(1);
 
-  const fetchApiGallery = () => {
     galleryAPI
       .fetchGallery(imageName, page)
 
@@ -75,7 +70,9 @@ export default function App() {
         if (hits.length === 0) {
           toast.error('По вашему запросу нет нужного результата!');
         }
-        setImages(state => [...state, ...hits]);
+
+        // setImages(state => [...state, ...hits]);
+        setImages([...images, ...hits]);
         setTotal(total);
         setIsLoading(false);
         setStatus(Status.RESOLVED);
@@ -86,7 +83,8 @@ export default function App() {
         setError(error);
         setStatus(Status.REJECTED);
       });
-  };
+    console.log('images:', images);
+  }, [imageName, page]);
 
   const scrollPage = () => {
     window.scrollTo({
@@ -94,21 +92,21 @@ export default function App() {
       behavior: 'smooth',
     });
   };
+
   const onLoadMore = () => {
     setIsLoading(true);
-
-    fetchApiGallery();
+    setPage(page => page + 1);
   };
 
   return (
     <div className={s.app}>
       <Searchbar onSubmit={handleFormSubmit} />
-      {status === 'idle' && (
+      {status === Status.IDLE && (
         <div className={s.text}>Введите текст для поиска</div>
       )}
-      {status === 'pending' && <Loader />}
-      {status === 'rejected' && <ImageErrorView message={error.message} />}
-      {total > 1 && status === 'resolved' && (
+      {status === Status.PENDING && <Loader />}
+      {status === Status.REJECTED && <ImageErrorView message={error.message} />}
+      {total > 1 && status === Status.RESOLVED && (
         <ImageGallery images={images} largeURL={largeImgModal} />
       )}
       {largeImageURL && (
@@ -117,7 +115,8 @@ export default function App() {
         </Modal>
       )}
       {isLoading && <Loader />}
-      {total > images.length && !isLoading && <Button onClick={onLoadMore} />}
+      {/* {total > images.length && !isLoading && <Button onClick={onLoadMore} />} */}
+      {total > images.length && <Button onLoadMore={onLoadMore} />}
       <ToastContainer autoClose={3000} />
     </div>
   );
@@ -130,8 +129,6 @@ export default function App() {
 //     largeImageURL: '',
 //     images: [],
 //     total: null,
-
-//     //TODO START перенос из ImageGallary
 //     page: 1,
 //     error: null,
 //     status: Status.IDLE,
@@ -160,7 +157,7 @@ export default function App() {
 //       largeImageURL: largeURL,
 //     }));
 //   };
-
+// TODO
 //   componentDidUpdate(prevProps, prevState) {
 //     const prevName = prevState.imageName;
 //     const nextName = this.state.imageName;
